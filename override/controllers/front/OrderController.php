@@ -34,6 +34,8 @@ class OrderController extends OrderControllerCore
         $translator = $this->getTranslator();
 
         $session = $this->getCheckoutSession();
+        
+        $customCheckout = Module::getInstanceByName('everpsorderoptions');
 
         $this->checkoutProcess = new CheckoutProcess(
             $this->context,
@@ -53,14 +55,15 @@ class OrderController extends OrderControllerCore
                 $this->makeAddressForm()
             ));
 
-        $customCheckout = Module::getInstanceByName('everpsorderoptions');
-        $this->checkoutProcess
-            ->addStep(new EverCheckoutStep(
-                    $this->context,
-                    $this->getTranslator(),
-                    $customCheckout
-                )
-            );
+        if ((int)Configuration::get('EVERPSOPTIONS_POSITION') == 1) {
+            $this->checkoutProcess
+                ->addStep(new EverCheckoutStep(
+                        $this->context,
+                        $this->getTranslator(),
+                        $customCheckout
+                    )
+                );
+        }
 
         if (!$this->context->cart->isVirtualCart()) {
             $checkoutDeliveryStep = new CheckoutDeliveryStep(
@@ -83,6 +86,16 @@ class OrderController extends OrderControllerCore
                 );
 
             $this->checkoutProcess->addStep($checkoutDeliveryStep);
+        }
+
+        if ((int)Configuration::get('EVERPSOPTIONS_POSITION') == 2) {
+            $this->checkoutProcess
+                ->addStep(new EverCheckoutStep(
+                        $this->context,
+                        $this->getTranslator(),
+                        $customCheckout
+                    )
+                );
         }
 
         $this->checkoutProcess

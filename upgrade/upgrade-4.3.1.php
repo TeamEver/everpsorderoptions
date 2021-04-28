@@ -21,24 +21,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-function upgrade_module_3_0_1()
+function upgrade_module_4_3_1()
 {
-    set_time_limit(0);
-    $result = true;
-    $sql = array();
-    // Update SEO products
-    $sql[] =
-        'ALTER TABLE `'._DB_PREFIX_.'everpsorderoptions_field`
-         ADD `position` int(10) NULL DEFAULT NULL
-         AFTER `quantity`
-    ';
-    $sql[] =
-        'ALTER TABLE `'._DB_PREFIX_.'everpsorderoptions_option`
-         ADD `position` int(10) NULL DEFAULT NULL
-         AFTER `quantity`
-    ';
-    foreach ($sql as $s) {
-        $result &= Db::getInstance()->execute($s);
-    }
-    return $result;
+    return Configuration::updateValue('EVERPSOPTIONS_POSITION', 1);
 }

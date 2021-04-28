@@ -24,10 +24,19 @@
             <strong>{l s='Please set module\'s configuration' mod='everpsorderoptions'}</strong><br />
             {l s='Thanks for using Team Ever\'s modules' mod='everpsorderoptions'}.<br />
         </p>
+        {if isset($options_fields_admin_link) && $options_fields_admin_link}
+        <a href="{$options_fields_admin_link|escape:'htmlall':'UTF-8'}" class="btn btn-lg btn-success">{l s='Manage forms fields' mod='everpsorderoptions'}</a>
+        {/if}
+        {if isset($options_admin_link) && $options_admin_link}
+        <a href="{$options_admin_link|escape:'htmlall':'UTF-8'}" class="btn btn-lg btn-success">{l s='Manage forms options' mod='everpsorderoptions'}</a>
+        {/if}
+        {if isset($module_link) && $module_link}
+        <a href="{$module_link|escape:'htmlall':'UTF-8'}" class="btn btn-lg btn-success">{l s='Module configuration' mod='everpsorderoptions'}</a>
+        {/if}
     </div>
     <div class="col-md-6">
             <p class="alert alert-warning">
-                {l s='This module is free and will always be ! You can support our free modules by making a donation by clicking the button below' mod='everpsblog'}
+                {l s='This module is free and will always be ! You can support our free modules by making a donation by clicking the button below' mod='everpsorderoptions'}
             </p>
             <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
             <input type="hidden" name="cmd" value="_s-xclick" />

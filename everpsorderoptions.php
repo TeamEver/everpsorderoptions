@@ -35,7 +35,7 @@ class Everpsorderoptions extends Module
     {
         $this->name = 'everpsorderoptions';
         $this->tab = 'front_office_features';
-        $this->version = '4.2.2';
+        $this->version = '4.3.2';
         $this->author = 'Team Ever';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -49,6 +49,7 @@ class Everpsorderoptions extends Module
 
     public function install()
     {
+        Configuration::updateValue('EVERPSOPTIONS_POSITION', 1);
         include(dirname(__FILE__).'/sql/install.php');
         return (parent::install()
             && $this->registerHook('actionAdminControllerSetMedia')
@@ -136,6 +137,18 @@ class Everpsorderoptions extends Module
         }
 
         $this->context->smarty->assign('everpsorderoptions_dir', $this->_path);
+        $options_fields_admin_link  = 'index.php?controller=AdminEverPsOptionsField&token=';
+        $options_fields_admin_link .= Tools::getAdminTokenLite('AdminEverPsOptionsField');
+        $options_admin_link  = 'index.php?controller=AdminEverPsOptionsOption&token=';
+        $options_admin_link .= Tools::getAdminTokenLite('AdminEverPsOptionsOption');
+
+
+        $this->context->smarty->assign(array(
+            'everpsorderoptions_dir' => $this->_path,
+            'options_fields_admin_link' => $options_fields_admin_link,
+            'options_admin_link' => $options_admin_link,
+        ));
+
         if ($this->checkLatestEverModuleVersion($this->name, $this->version)) {
             $this->html .= $this->context->smarty->fetch($this->local_path.'views/templates/admin/upgrade.tpl');
         }
@@ -174,6 +187,16 @@ class Everpsorderoptions extends Module
         $order_states = OrderState::getOrderStates(
             $this->context->language->id
         );
+        $step_position = array(
+            array(
+                'id_position' => 1,
+                'name' => $this->l('After login & address form (before shipping)')
+            ),
+            array(
+                'id_position' => 2,
+                'name' => $this->l('After shipping form (before payment)')
+            ),
+        );
         return array(
             'form' => array(
                 'legend' => array(
@@ -181,6 +204,18 @@ class Everpsorderoptions extends Module
                 'icon' => 'icon-cogs',
                 ),
                 'input' => array(
+                    array(
+                        'type' => 'select',
+                        'label' => $this->l('Order step position'),
+                        'desc' => $this->l('Please select order step position'),
+                        'hint' => $this->l('Will impact position of the new order step'),
+                        'name' => 'EVERPSOPTIONS_POSITION',
+                        'options' => array(
+                            'query' => $step_position,
+                            'id' => 'id_position',
+                            'name' => 'name',
+                        )
+                    ),
                     array(
                         'type' => 'select',
                         'label' => $this->l('Forms are validated when the order is'),
@@ -248,6 +283,7 @@ class Everpsorderoptions extends Module
             ) : '';
         }
         return array(
+            'EVERPSOPTIONS_POSITION' => Configuration::get('EVERPSOPTIONS_POSITION'),
             'EVERPSOPTIONS_VALIDATION' => Configuration::get('EVERPSOPTIONS_VALIDATION'),
             'EVERPSOPTIONS_CANCEL' => Configuration::get('EVERPSOPTIONS_CANCEL'),
             'EVERPSOPTIONS_TITLE' => (!empty(
@@ -266,6 +302,12 @@ class Everpsorderoptions extends Module
     public function postValidation()
     {
         if (Tools::isSubmit('submitEverpsorderoptionsModule')) {
+            if (!Tools::getValue('EVERPSOPTIONS_POSITION')
+                || !Validate::isUnsignedInt(Tools::getValue('EVERPSOPTIONS_POSITION'))) {
+                $this->postErrors[] = $this->l(
+                    'Error: Order step position is not valid'
+                );
+            }
             if (!Tools::getValue('EVERPSOPTIONS_VALIDATION')
                 || !Validate::isUnsignedInt(Tools::getValue('EVERPSOPTIONS_VALIDATION'))) {
                 $this->postErrors[] = $this->l(
@@ -318,6 +360,10 @@ class Everpsorderoptions extends Module
                 .$lang['id_lang']
             ) : '';
         }
+        Configuration::updateValue(
+            'EVERPSOPTIONS_POSITION',
+            Tools::getValue('EVERPSOPTIONS_POSITION')
+        );
         Configuration::updateValue(
             'EVERPSOPTIONS_VALIDATION',
             Tools::getValue('EVERPSOPTIONS_VALIDATION')
@@ -405,12 +451,6 @@ class Everpsorderoptions extends Module
             ));
             return $this->display(__FILE__, 'views/templates/hook/confirmation.tpl');
         }
-    }
-
-    public function hookActionEmailAddAfterContent($params)
-    {
-        // Todo : Use of params to check module template, conditionnaly add content if is validated order email sent to admin or customer 
-        $orderedOptions = $this->getSessionOptions($orderedOptions);
     }
 
     public function hookActionValidateOrder($params)
@@ -673,11 +713,20 @@ class Everpsorderoptions extends Module
 
     public function checkLatestEverModuleVersion($module, $version)
     {
+        $upgrade_link = 'https://upgrade.team-ever.com/upgrade.php?module='
+        .$module
+        .'&version='
+        .$version;
+        $handle = curl_init($upgrade_link);
+        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+        curl_exec($handle);
+        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+        curl_close($handle);
+        if ($httpCode != 200) {
+            return false;
+        }
         $module_version = Tools::file_get_contents(
-            'https://upgrade.team-ever.com/upgrade.php?module='
-            .$module
-            .'&version='
-            .base64_encode($version)
+            $upgrade_link
         );
         if ($module_version && $module_version > $version) {
             return true;

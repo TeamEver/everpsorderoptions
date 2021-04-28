@@ -8,7 +8,12 @@ $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_01da36bdc7136ee63b0
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_80d0d30d2a6e1c495708278bbb27df7c'] = 'Options de commande';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_f0c865a1025e2d17fa0cc5d79a30ba45'] = 'Champs du formulaire';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_79325a036f4918fe46f9f4f3104e26ac'] = 'Options du formulaire';
+$_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_c515f98a4646de2a959789174c136387'] = 'Après les champs de connexion et d\'adresse (avant le choix du mode de livraison)';
+$_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_d3c1cb3943fceadce416e2c6a62f58ce'] = 'Après le choix du mode de livraison (avant le mode de paiement)';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_f4f70727dc34561dfde1a3c529b6205c'] = 'Réglages';
+$_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_ec19d3f8ec6325dede6b3fc63db14fb4'] = 'Position de l\'étape dans le tunnel de commande';
+$_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_cedd55a9bdb7ac1609aae89252cb689b'] = 'Merci de sélectionner la position de l\'étape dans le tunnel de commande';
+$_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_9bb3a92c7f7ded059551d9d0460b72a4'] = 'Impactera la position du nouveau champ dans le tunnel de commande';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_89ef8858554effafe6c39dc4bbe288ef'] = 'Les formulaires sont validés lorsque la commande est';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_7799dc0c5cd25304473d61cbf16df33b'] = 'Le stock des options sera incrémenté lorsque la commande aura ce statut';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_0b2785ddfcae638a8bb0adfad031fe83'] = 'Sera utilisé pour la gestion des stocks des options';
@@ -21,6 +26,7 @@ $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_bf0cc61c8c663c23f59
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_fa2a6f4850e8e590d301ce971cf493de'] = 'Précisez un texte personnalisé pour l\'étape du processus de commande';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_93a000afd8cc726f6d9de68bad1fd8b5'] = 'Sera affiché avant le formulaire';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_c9cc8cce247e49bae79f15173ce97354'] = 'Enregistrer';
+$_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_ada7cfc3588949b30c4c0b20af45bd89'] = 'Erreur : la position du champ n\'est pas valide';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_e593903b96727784c1d90d1ca18b0f88'] = 'Erreur : l\'état de commande validé n\'est pas valide';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_86a26ff46cd3cf7e32288cd72ad64f64'] = 'Erreur : l\'état de commande annulé n\'est pas valide';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_2556357ca17f93402e4b58e43b6f9922'] = 'Erreur : le titre est invalide';
@@ -135,7 +141,13 @@ $_MODULE['<{everpsorderoptions}prestashop>footer_672713b9ebcaa2c438970dd65b8a49b
 $_MODULE['<{everpsorderoptions}prestashop>header_72665cea95a6abd039ad2f5bca68a78e'] = 'Options sur les commandes';
 $_MODULE['<{everpsorderoptions}prestashop>header_0a154c5012c3cb54ad0bb82a5d79b5ba'] = 'Merci de renseigner le formulaire pour configurer le module';
 $_MODULE['<{everpsorderoptions}prestashop>header_5c96d1c087f388287fa091121b00627b'] = 'Merci d\'utiliser les modules de Team Ever';
+$_MODULE['<{everpsorderoptions}prestashop>header_b391c59bb1a00a4cd390c8f7b8844a02'] = 'Gérer les champs des formulaires';
+$_MODULE['<{everpsorderoptions}prestashop>header_cda2ac2301f078e59dafd42c5e1c4334'] = 'Gérer les options des formulaires';
+$_MODULE['<{everpsorderoptions}prestashop>header_b04f2c8a90cfc485fc990dc8dc4ba293'] = 'Configuration du module';
+$_MODULE['<{everpsorderoptions}prestashop>header_4fb704f05a00111d953eb10dddc881d9'] = 'Ce module est gratuit et le sera toujours! Vous pouvez soutenir nos modules gratuits en faisant un don en cliquant sur le bouton ci-dessous';
 $_MODULE['<{everpsorderoptions}prestashop>order_651ec834bc59db5f5bf3d9661b4d37c6'] = 'Options sélectionnées';
+$_MODULE['<{everpsorderoptions}prestashop>upgrade_11f4d2cc4546c08ed99645473ba29a5f'] = 'Un surclassement est disponible sur notre boutique. Vérifiez s\'il vous plaît';
+$_MODULE['<{everpsorderoptions}prestashop>upgrade_a43640b6c7cabe3d8d157aba85f7cee4'] = 'pour obtenir la dernière version de ce module';
 $_MODULE['<{everpsorderoptions}prestashop>confirmation_651ec834bc59db5f5bf3d9661b4d37c6'] = 'Options sélectionnées';
 $_MODULE['<{everpsorderoptions}prestashop>evercheckoutstep_9bfb6e6af6e6793bfa9387e728187c87'] = '(requis)';
 $_MODULE['<{everpsorderoptions}prestashop>evercheckoutstep_a4d3b161ce1309df1c4e25df28694b7b'] = 'Continuer';
