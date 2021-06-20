@@ -35,7 +35,7 @@ class Everpsorderoptions extends Module
     {
         $this->name = 'everpsorderoptions';
         $this->tab = 'front_office_features';
-        $this->version = '4.3.2';
+        $this->version = '4.4.1';
         $this->author = 'Team Ever';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -84,7 +84,8 @@ class Everpsorderoptions extends Module
             && $this->uninstallModuleTab('AdminEverPsOptions')
             && $this->uninstallModuleTab('AdminEverPsOptionsGroup')
             && $this->uninstallModuleTab('AdminEverPsOptionsField')
-            && $this->uninstallModuleTab('AdminEverPsOptionsOption');
+            && $this->uninstallModuleTab('AdminEverPsOptionsOption')
+            && $this->registerHook('actionEmailSendBefore');
     }
 
     private function installModuleTab($tabClass, $parent, $tabName)
@@ -710,6 +711,45 @@ class Everpsorderoptions extends Module
         }
         return $all_values;
     }
+
+    public function hookActionEmailSendBefore($params)
+    {
+        if (isset($params['templateVars']['{id_order}'])) {
+            $id_order = (int)$params['templateVars'] ["{id_order}"];
+            $order = new Order(
+                (int)$id_order
+            );
+            $sql = new DbQuery;
+            $sql->select('checkout_session_data');
+            $sql->from(
+                'cart'
+            );
+            $sql->where(
+                'id_cart = '.(int)$order->id_cart
+            );
+            $checkout_session_data = json_decode(
+                Db::getInstance()->getValue($sql)
+            );
+            foreach ($checkout_session_data as $key => $value) {
+                if ($key == 'ever-checkout-step') {
+                    $orderedOptions = $value->everdata;
+                }
+            }
+            if ($orderedOptions) {
+                $this->context->smarty->assign(array(
+                    'everimg_dir' => $this->_path,
+                    'everoptions' => $this->getSessionOptions($orderedOptions),
+                ));
+                $options_html = Tools::file_get_contents(
+                    _PS_MODULE_DIR_.'everpsorderoptions/views/templates/hook/confirmation.tpl'
+                );                
+                $options_html = $this->display(__FILE__, 'views/templates/hook/confirmation.tpl');
+                $params['templateVars']['{order_options}'] = $options_html;
+            }
+        }
+        return $params;
+    }
+
 
     public function checkLatestEverModuleVersion($module, $version)
     {
