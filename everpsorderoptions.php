@@ -35,7 +35,7 @@ class Everpsorderoptions extends Module
     {
         $this->name = 'everpsorderoptions';
         $this->tab = 'front_office_features';
-        $this->version = '4.5.1';
+        $this->version = '4.5.2';
         $this->author = 'Team Ever';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -52,6 +52,7 @@ class Everpsorderoptions extends Module
         include(dirname(__FILE__).'/sql/install.php');
         return (parent::install()
             && $this->registerHook('actionCheckoutRender')
+            && $this->registerHook('actionEmailSendBefore')
             && $this->registerHook('actionAdminControllerSetMedia')
             && $this->registerHook('displayOrderConfirmation')
             && $this->registerHook('displayAdminOrder')
@@ -679,9 +680,9 @@ class Everpsorderoptions extends Module
         foreach ($orderedOptions as $key => $value) {
             if ((int)Tools::strlen($key) == 20) {
                 $field = new EverpsorderoptionsField(
-                    (int)substr($key, 19),
-                    (int)Context::getContext()->shop->id,
-                    (int)Context::getContext()->language->id
+                    (int) substr($key, 19),
+                    (int) Context::getContext()->shop->id,
+                    (int) Context::getContext()->language->id
                 );
             } else {
                 $field = new EverpsorderoptionsField(
