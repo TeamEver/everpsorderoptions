@@ -35,7 +35,7 @@ class Everpsorderoptions extends Module
     {
         $this->name = 'everpsorderoptions';
         $this->tab = 'front_office_features';
-        $this->version = '4.4.1';
+        $this->version = '4.5.1';
         $this->author = 'Team Ever';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -44,7 +44,6 @@ class Everpsorderoptions extends Module
         $this->description = $this->l('Add options on extra order step');
         $this->confirmUninstall = $this->l('Are you sure ?');
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
-        $this->isSeven = Tools::version_compare(_PS_VERSION_, '1.7', '>=') ? true : false;
     }
 
     public function install()
@@ -52,11 +51,10 @@ class Everpsorderoptions extends Module
         Configuration::updateValue('EVERPSOPTIONS_POSITION', 1);
         include(dirname(__FILE__).'/sql/install.php');
         return (parent::install()
+            && $this->registerHook('actionCheckoutRender')
             && $this->registerHook('actionAdminControllerSetMedia')
-            && $this->registerHook('actionEmailAddAfterContent')
             && $this->registerHook('displayOrderConfirmation')
             && $this->registerHook('displayAdminOrder')
-            && $this->registerHook('header')
             && $this->registerHook('actionValidateOrder')
             && $this->registerHook('actionOrderStatusUpdate')
             && $this->registerHook('displayPDFInvoice')
@@ -84,8 +82,7 @@ class Everpsorderoptions extends Module
             && $this->uninstallModuleTab('AdminEverPsOptions')
             && $this->uninstallModuleTab('AdminEverPsOptionsGroup')
             && $this->uninstallModuleTab('AdminEverPsOptionsField')
-            && $this->uninstallModuleTab('AdminEverPsOptionsOption')
-            && $this->registerHook('actionEmailSendBefore');
+            && $this->uninstallModuleTab('AdminEverPsOptionsOption');
     }
 
     private function installModuleTab($tabClass, $parent, $tabName)
@@ -93,10 +90,10 @@ class Everpsorderoptions extends Module
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = $tabClass;
-        $tab->id_parent = (int)Tab::getIdFromClassName($parent);
+        $tab->id_parent = (int) Tab::getIdFromClassName($parent);
         $tab->position = Tab::getNewLastPosition($tab->id_parent);
         $tab->module = $this->name;
-        if ($tabClass == 'AdminEverPsOptions' && $this->isSeven) {
+        if ($tabClass == 'AdminEverPsOptions') {
             $tab->icon = 'icon-team-ever';
         }
 
@@ -190,11 +187,19 @@ class Everpsorderoptions extends Module
         );
         $step_position = array(
             array(
+                'id_position' => 0,
+                'name' => $this->l('At the beginning of order steps')
+            ),
+            array(
                 'id_position' => 1,
                 'name' => $this->l('After login & address form (before shipping)')
             ),
             array(
                 'id_position' => 2,
+                'name' => $this->l('After shipping form (before payment)')
+            ),
+            array(
+                'id_position' => 3,
                 'name' => $this->l('After shipping form (before payment)')
             ),
         );
@@ -269,32 +274,14 @@ class Everpsorderoptions extends Module
 
     protected function getConfigFormValues()
     {
-        $form_title = array();
-        $form_text = array();
-        foreach (Language::getLanguages(false) as $lang) {
-            $form_title[$lang['id_lang']] = (Tools::getValue(
-                'EVERPSOPTIONS_TITLE_'.$lang['id_lang']
-            )) ? Tools::getValue(
-                'EVERPSOPTIONS_TITLE_'.$lang['id_lang']
-            ) : '';
-            $form_text[$lang['id_lang']] = (Tools::getValue(
-                'EVERPSOPTIONS_MSG_'.$lang['id_lang']
-            )) ? Tools::getValue(
-                'EVERPSOPTIONS_MSG_'.$lang['id_lang']
-            ) : '';
-        }
         return array(
             'EVERPSOPTIONS_POSITION' => Configuration::get('EVERPSOPTIONS_POSITION'),
             'EVERPSOPTIONS_VALIDATION' => Configuration::get('EVERPSOPTIONS_VALIDATION'),
             'EVERPSOPTIONS_CANCEL' => Configuration::get('EVERPSOPTIONS_CANCEL'),
-            'EVERPSOPTIONS_TITLE' => (!empty(
-                $form_title[(int)Configuration::get('PS_LANG_DEFAULT')]
-            )) ? $form_title : Configuration::getInt(
+            'EVERPSOPTIONS_TITLE' => Configuration::getConfigInMultipleLangs(
                 'EVERPSOPTIONS_TITLE'
             ),
-            'EVERPSOPTIONS_MSG' => (!empty(
-                $form_text[(int)Configuration::get('PS_LANG_DEFAULT')]
-            )) ? $form_text : Configuration::getInt(
+            'EVERPSOPTIONS_MSG' => Configuration::getConfigInMultipleLangs(
                 'EVERPSOPTIONS_MSG'
             ),
         );
@@ -712,6 +699,74 @@ class Everpsorderoptions extends Module
         return $all_values;
     }
 
+    public function hookActionCheckoutRender($params)
+    {
+        $this->translator = Context::getContext()->getTranslator();
+
+        /** @var CheckoutProcess $process */
+        $process = $params['checkoutProcess'];
+        $steps = $process->getSteps();
+
+        $everStep = new EverCheckoutStep(
+            $this->context,
+            $this->translator,
+            Module::getInstanceByName($this->name)
+        );
+
+        $everStep->setCheckoutProcess($process);
+        switch ((int) Configuration::get('EVERPSOPTIONS_POSITION')) {
+            case 0:
+                $newSteps = [
+                    $everStep,
+                    $steps[0],
+                    $steps[1],
+                    $steps[2],
+                    $steps[3]
+                ];
+
+            case 1:
+                $newSteps = [
+                    $steps[0],
+                    $everStep,
+                    $steps[1],
+                    $steps[2],
+                    $steps[3]
+                ];
+                break;
+            
+            case 2:
+                $newSteps = [
+                    $steps[0],
+                    $steps[1],
+                    $everStep,
+                    $steps[2],
+                    $steps[3]
+                ];
+                break;
+            
+            case 3:
+                $newSteps = [
+                    $steps[0],
+                    $steps[1],
+                    $steps[2],
+                    $everStep,
+                    $steps[3]
+                ];
+                break;
+
+            default:
+                $newSteps = [
+                    $everStep,
+                    $steps[0],
+                    $steps[1],
+                    $steps[2],
+                    $steps[3]
+                ];
+                break;
+        }
+        $process->setSteps($newSteps);
+    }
+
     public function hookActionEmailSendBefore($params)
     {
         if (isset($params['templateVars']['{id_order}'])) {
@@ -757,20 +812,27 @@ class Everpsorderoptions extends Module
         .$module
         .'&version='
         .$version;
-        $handle = curl_init($upgrade_link);
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($handle);
-        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-        curl_close($handle);
-        if ($httpCode != 200) {
+        try {
+            $handle = curl_init($upgrade_link);
+            curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+            curl_exec($handle);
+            $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+            curl_close($handle);
+            if ($httpCode != 200) {
+                return false;
+            }
+            $module_version = Tools::file_get_contents(
+                $upgrade_link
+            );
+            if ($module_version && $module_version > $version) {
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog(
+                'Unable to check Team Ever module upgrade'
+            );
             return false;
         }
-        $module_version = Tools::file_get_contents(
-            $upgrade_link
-        );
-        if ($module_version && $module_version > $version) {
-            return true;
-        }
-        return false;
     }
 }

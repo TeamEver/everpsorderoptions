@@ -36,7 +36,7 @@ class EverCheckoutStep extends AbstractCheckoutStep
         $this->module = $module;
         $title = Configuration::get(
             'EVERPSOPTIONS_TITLE',
-            (int)Context::getContext()->language->id
+            (int) Context::getContext()->language->id
         );
         $this->setTitle(
             htmlspecialchars_decode($title)
@@ -51,13 +51,13 @@ class EverCheckoutStep extends AbstractCheckoutStep
      */
     public function getDataToPersist()
     {
-        return array(
+        return [
             'everdata' => $this->everdata,
             'evermessage' => Configuration::get(
                 'EVERPSOPTIONS_MSG',
-                (int)Context::getContext()->language->id
+                (int) Context::getContext()->language->id
             )
-        );
+        ];
     }
 
     /**
@@ -91,11 +91,7 @@ class EverCheckoutStep extends AbstractCheckoutStep
                 }
             }
             $this->setComplete(true);
-            if (version_compare(_PS_VERSION_, '1.7.6') > 0) {
-                $this->setNextStepAsCurrent();
-            } else {
-                $this->setCurrent(false);
-            }
+            $this->setNextStepAsCurrent();
         }
 
         return $this;
@@ -132,19 +128,18 @@ class EverCheckoutStep extends AbstractCheckoutStep
                 }
             }
         }
-        // die(var_dump($fields));
         $defaultParams = array(
             'identifier' => 'everpsorderoptions',
             'position' => 3,
             'title' => $this->getTitle(),
-            'step_is_complete' => (int)$this->isComplete(),
-            'step_is_reachable' => (int)$this->isReachable(),
-            'step_is_current' => (int)$this->isCurrent(),
+            'step_is_complete' => (int) $this->isComplete(),
+            'step_is_reachable' => (int) $this->isReachable(),
+            'step_is_current' => (int) $this->isCurrent(),
             'fields' => $fields,
             'everdata' => $this->everdata,
             'evermessage' => Configuration::get(
                 'EVERPSOPTIONS_MSG',
-                (int)Context::getContext()->language->id
+                (int) Context::getContext()->language->id
             )
         );
 

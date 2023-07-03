@@ -213,7 +213,7 @@ class AdminEverPsOptionsFieldController extends ModuleAdminController
             'submit' => array(
                 'name' => 'save',
                 'title' => $this->l('Save'),
-                'class' => 'button pull-right'
+                'class' => 'btn btn-success pull-right'
             ),
             'buttons' => array(
                 'save-and-stay' => array(

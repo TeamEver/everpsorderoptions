@@ -18,7 +18,6 @@
                     action="{$urls.pages.order}"
                     data-refresh-url="{url entity='order' params=['ajax' => 1, 'action' => 'customStep']}"
             >
-                
                 <div class="form-fields">
                 {foreach from=$fields item=field}
                 {* Retrieved persisted datas *}
