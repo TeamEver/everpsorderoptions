@@ -1,4 +1,4 @@
-# Prestashop 1.7 module for options on order #
+# Prestashop 8 module for options on order #
 
 This module allows you to add steps in the Prestashop 1.7 checkout tunnel and to offer a configurable form.
 [You can make a donation to support the development of free modules by clicking on this link](https://www.paypal.com/donate?hosted_button_id=3CM3XREMKTMSE)
