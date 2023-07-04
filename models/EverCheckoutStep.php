@@ -80,7 +80,7 @@ class EverCheckoutStep extends AbstractCheckoutStep
      * @param array $requestParameters
      * @return $this
      */
-    public function handleRequest(array $requestParameters = array())
+    public function handleRequest(array $requestParameters = [])
     {
         if (isset($requestParameters['submitCustomStep'])) {
             foreach ($requestParameters as $key => $value) {

@@ -28,14 +28,14 @@ require_once _PS_MODULE_DIR_.'everpsorderoptions/models/EverCheckoutStep.php';
 class Everpsorderoptions extends Module
 {
     private $html;
-    private $postErrors = array();
-    private $postSuccess = array();
+    private $postErrors = [];
+    private $postSuccess = [];
 
     public function __construct()
     {
         $this->name = 'everpsorderoptions';
         $this->tab = 'front_office_features';
-        $this->version = '4.5.2';
+        $this->version = '4.5.3';
         $this->author = 'Team Ever';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -49,7 +49,7 @@ class Everpsorderoptions extends Module
     public function install()
     {
         Configuration::updateValue('EVERPSOPTIONS_POSITION', 1);
-        include(dirname(__FILE__).'/sql/install.php');
+        include(dirname(__FILE__) . '/sql/install.php');
         return (parent::install()
             && $this->registerHook('actionCheckoutRender')
             && $this->registerHook('actionEmailSendBefore')
@@ -78,7 +78,7 @@ class Everpsorderoptions extends Module
 
     public function uninstall()
     {
-        include(dirname(__FILE__).'/sql/uninstall.php');
+        include(dirname(__FILE__) . '/sql/uninstall.php');
         return parent::uninstall()
             && $this->uninstallModuleTab('AdminEverPsOptions')
             && $this->uninstallModuleTab('AdminEverPsOptionsGroup')
@@ -99,7 +99,7 @@ class Everpsorderoptions extends Module
         }
 
         foreach (Language::getLanguages(false) as $lang) {
-            $tab->name[(int)$lang['id_lang']] = $tabName;
+            $tab->name[(int) $lang['id_lang']] = $tabName;
         }
 
         return $tab->add();
@@ -107,7 +107,7 @@ class Everpsorderoptions extends Module
 
     private function uninstallModuleTab($tabClass)
     {
-        $tab = new Tab((int)Tab::getIdFromClassName($tabClass));
+        $tab = new Tab((int) Tab::getIdFromClassName($tabClass));
         return $tab->delete();
     }
 
@@ -149,11 +149,11 @@ class Everpsorderoptions extends Module
         ));
 
         if ($this->checkLatestEverModuleVersion($this->name, $this->version)) {
-            $this->html .= $this->context->smarty->fetch($this->local_path.'views/templates/admin/upgrade.tpl');
+            $this->html .= $this->context->smarty->fetch($this->local_path . 'views/templates/admin/upgrade.tpl');
         }
-        $this->html .= $this->context->smarty->fetch($this->local_path.'views/templates/admin/header.tpl');
+        $this->html .= $this->context->smarty->fetch($this->local_path . 'views/templates/admin/header.tpl');
         $this->html .= $this->renderForm();
-        $this->html .= $this->context->smarty->fetch($this->local_path.'views/templates/admin/footer.tpl');
+        $this->html .= $this->context->smarty->fetch($this->local_path . 'views/templates/admin/footer.tpl');
 
         return $this->html;
     }
@@ -169,8 +169,7 @@ class Everpsorderoptions extends Module
         $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'submitEverpsorderoptionsModule';
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
-            .'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars = array(
             'fields_value' => $this->getConfigFormValues(),
@@ -310,19 +309,19 @@ class Everpsorderoptions extends Module
                 );
             }
             foreach (Language::getLanguages(false) as $lang) {
-                if (!Tools::getValue('EVERPSOPTIONS_TITLE_'.$lang['id_lang'])
-                    || !Validate::isString(Tools::getValue('EVERPSOPTIONS_TITLE_'.$lang['id_lang']))
+                if (!Tools::getValue('EVERPSOPTIONS_TITLE_' . $lang['id_lang'])
+                    || !Validate::isString(Tools::getValue('EVERPSOPTIONS_TITLE_' . $lang['id_lang']))
                 ) {
                     $this->postErrors[] = $this->l(
                         'Error: title is not valid for lang '
-                    ).$lang['iso_code'];
+                    ) . $lang['iso_code'];
                 }
-                if (Tools::getValue('EVERPSOPTIONS_MSG_'.$lang['id_lang'])
-                    && !Validate::isCleanHtml(Tools::getValue('EVERPSOPTIONS_MSG_'.$lang['id_lang']))
+                if (Tools::getValue('EVERPSOPTIONS_MSG_' . $lang['id_lang'])
+                    && !Validate::isCleanHtml(Tools::getValue('EVERPSOPTIONS_MSG_' . $lang['id_lang']))
                 ) {
                     $this->postErrors[] = $this->l(
                         'Error: text is not valid for lang '
-                    ).$lang['iso_code'];
+                    ) . $lang['iso_code'];
                 }
             }
         }
@@ -331,8 +330,8 @@ class Everpsorderoptions extends Module
     protected function postProcess()
     {
         $form_values = $this->getConfigFormValues();
-        $form_title = array();
-        $form_text = array();
+        $form_title = [];
+        $form_text = [];
         foreach (Language::getLanguages(false) as $lang) {
             $form_title[$lang['id_lang']] = (
                 Tools::getValue('EVERPSOPTIONS_TITLE_'
@@ -376,12 +375,12 @@ class Everpsorderoptions extends Module
 
     public function hookActionAdminControllerSetMedia()
     {
-        $this->context->controller->addCss($this->_path.'views/css/ever.css');
+        $this->context->controller->addCss($this->_path . 'views/css/ever.css');
         $controller_name = Tools::getValue('controller');
         if ($controller_name == 'AdminEverPsOptionsField'
             || $controller_name == 'AdminEverPsOptionsOption'
         ) {
-            $this->context->controller->addJs($this->_path.'views/js/ever.js');
+            $this->context->controller->addJs($this->_path . 'views/js/ever.js');
         }
     }
 
@@ -394,7 +393,7 @@ class Everpsorderoptions extends Module
             'cart'
         );
         $sql->where(
-            'id_cart = '.(int)$order->id_cart
+            'id_cart = ' . (int) $order->id_cart
         );
         $checkout_session_data = json_decode(
             Db::getInstance()->getValue($sql)
@@ -415,15 +414,15 @@ class Everpsorderoptions extends Module
 
     public function hookDisplayAdminOrder($params)
     {
-        $options = array();
-        $order = new Order((int)$params['id_order']);
+        $options = [];
+        $order = new Order((int) $params['id_order']);
         $sql = new DbQuery;
         $sql->select('checkout_session_data');
         $sql->from(
             'cart'
         );
         $sql->where(
-            'id_cart = '.(int)$order->id_cart
+            'id_cart = ' . (int) $order->id_cart
         );
         $checkout_session_data = json_decode(
             Db::getInstance()->getValue($sql)
@@ -452,30 +451,30 @@ class Everpsorderoptions extends Module
         $validated = (int)Configuration::get('EVERPSOPTIONS_VALIDATION');
         $cancelled = (int)Configuration::get('EVERPSOPTIONS_CANCEL');
         $optionsStatus = array(
-            (int)$validated,
-            (int)$cancelled
+            (int) $validated,
+            (int) $cancelled
         );
         if (isset($params['newOrderStatus'])) {
             $orderStatus = $params['newOrderStatus'];
         } else {
             $orderStatus = $params['orderStatus'];
         }
-        if (!in_array((int)$orderStatus->id, $optionsStatus)) {
+        if (!in_array((int) $orderStatus->id, $optionsStatus)) {
             return;
         }
         if (isset($params['id_order'])) {
-            $order = new Order((int)$params['id_order']);
+            $order = new Order((int) $params['id_order']);
         } else {
             $order = $params['order'];
         }
-        $options = array();
+        $options = [];
         $sql = new DbQuery;
         $sql->select('checkout_session_data');
         $sql->from(
             'cart'
         );
         $sql->where(
-            'id_cart = '.(int)$order->id_cart
+            'id_cart = ' . (int) $order->id_cart
         );
         $checkout_session_data = json_decode(
             Db::getInstance()->getValue($sql)
@@ -510,11 +509,11 @@ class Everpsorderoptions extends Module
                         if (Validate::isLoadedObject($option)
                             && (bool)$option->manage_quantity === true
                         ) {
-                            if ((int)$params['newOrderStatus']->id == (int)$cancelled) {
-                                $option->quantity = (int)$option->quantity + 1;
+                            if ((int) $params['newOrderStatus']->id == (int) $cancelled) {
+                                $option->quantity = (int) $option->quantity + 1;
                             }
-                            if ((int)$params['newOrderStatus']->id == (int)$validated) {
-                                $option->quantity = (int)$option->quantity - 1;
+                            if ((int) $params['newOrderStatus']->id == (int) $validated) {
+                                $option->quantity = (int) $option->quantity - 1;
                             }
                             if ($option->quantity < 0) {
                                 $option->quantity = 0;
@@ -525,11 +524,11 @@ class Everpsorderoptions extends Module
                     
                     default:
                         if ((bool)$field->manage_quantity === true) {
-                            if ((int)$params['newOrderStatus']->id == (int)$cancelled) {
-                                $field->quantity = (int)$field->quantity + 1;
+                            if ((int) $params['newOrderStatus']->id == (int) $cancelled) {
+                                $field->quantity = (int) $field->quantity + 1;
                             }
-                            if ((int)$params['newOrderStatus']->id == (int)$validated) {
-                                $field->quantity = (int)$field->quantity - 1;
+                            if ((int) $params['newOrderStatus']->id == (int) $validated) {
+                                $field->quantity = (int) $field->quantity - 1;
                             }
                             if ($field->quantity < 0) {
                                 $field->quantity = 0;
@@ -544,10 +543,10 @@ class Everpsorderoptions extends Module
 
     public function hookDisplayPDFInvoice($params)
     {
-        $options = array();
-        $id_order = (int)$params['object']->id_order;
+        $options = [];
+        $id_order = (int) $params['object']->id_order;
         $order = new Order(
-            (int)$id_order
+            (int) $id_order
         );
         $sql = new DbQuery;
         $sql->select('checkout_session_data');
@@ -555,7 +554,7 @@ class Everpsorderoptions extends Module
             'cart'
         );
         $sql->where(
-            'id_cart = '.(int)$order->id_cart
+            'id_cart = ' . (int) $order->id_cart
         );
         $checkout_session_data = json_decode(
             Db::getInstance()->getValue($sql)
@@ -673,7 +672,7 @@ class Everpsorderoptions extends Module
 
     private function getSessionOptions($orderedOptions)
     {
-        $all_values = array();
+        $all_values = [];
         // key is 26 length for radio and checkboxes
         // key is 20 length for other inputs
         // Last character is always field id
@@ -771,9 +770,9 @@ class Everpsorderoptions extends Module
     public function hookActionEmailSendBefore($params)
     {
         if (isset($params['templateVars']['{id_order}'])) {
-            $id_order = (int)$params['templateVars'] ["{id_order}"];
+            $id_order = (int) $params['templateVars'] ["{id_order}"];
             $order = new Order(
-                (int)$id_order
+                (int) $id_order
             );
             $sql = new DbQuery;
             $sql->select('checkout_session_data');
@@ -781,7 +780,7 @@ class Everpsorderoptions extends Module
                 'cart'
             );
             $sql->where(
-                'id_cart = '.(int)$order->id_cart
+                'id_cart = ' . (int) $order->id_cart
             );
             $checkout_session_data = json_decode(
                 Db::getInstance()->getValue($sql)
@@ -791,13 +790,13 @@ class Everpsorderoptions extends Module
                     $orderedOptions = $value->everdata;
                 }
             }
-            if ($orderedOptions) {
+            if (isset($orderedOptions) && $orderedOptions) {
                 $this->context->smarty->assign(array(
                     'everimg_dir' => $this->_path,
                     'everoptions' => $this->getSessionOptions($orderedOptions),
                 ));
                 $options_html = Tools::file_get_contents(
-                    _PS_MODULE_DIR_.'everpsorderoptions/views/templates/hook/confirmation.tpl'
+                    _PS_MODULE_DIR_ . 'everpsorderoptions/views/templates/hook/confirmation.tpl'
                 );                
                 $options_html = $this->display(__FILE__, 'views/templates/hook/confirmation.tpl');
                 $params['templateVars']['{order_options}'] = $options_html;
@@ -806,13 +805,33 @@ class Everpsorderoptions extends Module
         return $params;
     }
 
+    public static function getCartSessionDatas($idCart)
+    {
+        $sql = new DbQuery;
+        $sql->select('checkout_session_data');
+        $sql->from(
+            'cart'
+        );
+        $sql->where(
+            'id_cart = ' . (int) $idCart
+        );
+        $checkout_session_data = json_decode(
+            Db::getInstance()->getValue($sql)
+        );
+        foreach ($checkout_session_data as $key => $value) {
+            if ($key == 'ever-checkout-step') {
+                return $value->everdata;
+            }
+        }
+        return false;
+    }
 
     public function checkLatestEverModuleVersion($module, $version)
     {
         $upgrade_link = 'https://upgrade.team-ever.com/upgrade.php?module='
-        .$module
-        .'&version='
-        .$version;
+        . $module
+        . '&version='
+        . $version;
         try {
             $handle = curl_init($upgrade_link);
             curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);

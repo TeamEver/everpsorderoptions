@@ -1,7 +1,7 @@
 <?php
 
 global $_MODULE;
-$_MODULE = array();
+$_MODULE = [];
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_72665cea95a6abd039ad2f5bca68a78e'] = 'Options sur les commandes';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_933747e708b3fd7c5dd9c8909f10a1bf'] = 'Ajoutez des options sur les commandes dans une étape supplémentaire';
 $_MODULE['<{everpsorderoptions}prestashop>everpsorderoptions_01da36bdc7136ee63b0c6ff9689576c6'] = 'Êtes-vous certain ?';

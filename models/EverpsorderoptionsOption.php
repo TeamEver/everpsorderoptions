@@ -181,7 +181,7 @@ class EverpsorderoptionsOption extends ObjectModel
             'position ASC'
         );
         $options_array = Db::getInstance()->executeS($sql);
-        $field_options = array();
+        $field_options = [];
         foreach ($options_array as $option_array) {
             $field_option = new self(
                 (int)$option_array['id_everpsorderoptions_option'],
