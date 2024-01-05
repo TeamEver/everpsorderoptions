@@ -715,8 +715,8 @@ class Everpsorderoptions extends Module
 
         $everStep->setCheckoutProcess($process);
         $stepNumber = Configuration::get('EVERPSOPTIONS_POSITION');
-        $newSteps = array_splice($steps, $stepNumber, 0, [$everStep]);
-        $process->setSteps($newSteps);
+        array_splice($steps, $stepNumber, 0, [$everStep]);
+        $process->setSteps($steps);
     }
 
     public function hookActionEmailSendBefore($params)
