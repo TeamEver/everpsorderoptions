@@ -714,57 +714,9 @@ class Everpsorderoptions extends Module
         );
 
         $everStep->setCheckoutProcess($process);
-        switch ((int) Configuration::get('EVERPSOPTIONS_POSITION')) {
-            case 0:
-                $newSteps = [
-                    $everStep,
-                    $steps[0],
-                    $steps[1],
-                    $steps[2],
-                    $steps[3]
-                ];
-
-            case 1:
-                $newSteps = [
-                    $steps[0],
-                    $everStep,
-                    $steps[1],
-                    $steps[2],
-                    $steps[3]
-                ];
-                break;
-            
-            case 2:
-                $newSteps = [
-                    $steps[0],
-                    $steps[1],
-                    $everStep,
-                    $steps[2],
-                    $steps[3]
-                ];
-                break;
-            
-            case 3:
-                $newSteps = [
-                    $steps[0],
-                    $steps[1],
-                    $steps[2],
-                    $everStep,
-                    $steps[3]
-                ];
-                break;
-
-            default:
-                $newSteps = [
-                    $everStep,
-                    $steps[0],
-                    $steps[1],
-                    $steps[2],
-                    $steps[3]
-                ];
-                break;
-        }
-        $process->setSteps($newSteps);
+        $stepNumber = Configuration::get('EVERPSOPTIONS_POSITION');
+        array_splice($steps, $stepNumber, 0, [$everStep]);
+        $process->setSteps($steps);
     }
 
     public function hookActionEmailSendBefore($params)
